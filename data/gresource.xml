@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/cassidyjames/anamorph">
+    <file alias="Application.css">Application.css</file>
+    <file alias="preview.jpg">preview.jpg</file>
+    <file alias="preview-squeezed.jpg">preview-squeezed.jpg</file>
+  </gresource>
+</gresources>
+

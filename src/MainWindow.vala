@@ -23,7 +23,7 @@ public class MainWindow : Gtk.Window {
     public MainWindow (Gtk.Application application) {
         Object (
             application: application,
-            border_width: 12,
+            // border_width: 12,
             icon_name: Anamorph.ID,
             resizable: false,
             title: _("Anamorph"),
@@ -45,10 +45,18 @@ public class MainWindow : Gtk.Window {
         header_context.add_class (Gtk.STYLE_CLASS_FLAT);
 
         // TODO: Use real filename
-        var label = new Gtk.Label ("De-squeezing will create a new file named <b>$foo.desqueezed.ext</b> alongside the input file.");
+        var label = new Gtk.Label ("De-squeezing will create a new file named <b>video.desqueezed.mp4</b> alongside the input file.");
         label.max_width_chars = 50;
         label.use_markup = true;
         label.wrap = true;
+
+        var squeezed_image = new Gtk.Image.from_resource (Anamorph.PATH + "preview-squeezed.jpg");
+        squeezed_image.get_style_context ().add_class ("thumb");
+
+        var arrow = new Gtk.Image.from_icon_name ("go-next-symbolic", Gtk.IconSize.BUTTON);
+
+        var image = new Gtk.Image.from_resource (Anamorph.PATH + "preview.jpg");
+        image.get_style_context ().add_class ("thumb");
 
         var button = new Gtk.Button.with_label ("De-squeeze");
         button.halign = Gtk.Align.END;
@@ -57,10 +65,15 @@ public class MainWindow : Gtk.Window {
         var grid = new Gtk.Grid ();
         grid.column_spacing = 6;
         grid.halign = grid.valign = Gtk.Align.CENTER;
+        grid.margin_bottom = 12;
+        grid.margin_start = grid.margin_end = 12;
         grid.row_spacing = 24;
 
-        grid.attach (label, 0, 0);
-        grid.attach (button, 0, 1);
+        grid.attach (squeezed_image,  0, 0);
+        grid.attach (arrow,           1, 0);
+        grid.attach (image,           2, 0);
+        grid.attach (label,           0, 1, 3);
+        grid.attach (button,          0, 2, 3);
 
         set_titlebar (header);
         add (grid);
