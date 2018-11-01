@@ -58,6 +58,7 @@ public class Anamorph : Gtk.Application {
           Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         );
 
+        Gtk.Settings.get_default ().gtk_application_prefer_dark_theme = true;
         main_window.show_all ();
     }
 
