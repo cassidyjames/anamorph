@@ -56,7 +56,33 @@ public class MainWindow : Gtk.Window {
         var arrow = new Gtk.Image.from_icon_name ("go-next-symbolic", Gtk.IconSize.BUTTON);
 
         var image = new Gtk.Image.from_resource (Anamorph.PATH + "preview.jpg");
+        image.valign = Gtk.Align.CENTER;
         image.get_style_context ().add_class ("thumb");
+
+        var letterbox_switch = new Gtk.Switch ();
+        letterbox_switch.get_style_context ().add_class (Granite.STYLE_CLASS_MODE_SWITCH);
+        letterbox_switch.bind_property (
+            "active",
+            image,
+            "valign",
+            BindingFlags.SYNC_CREATE,
+            letterbox_transform_func
+        );
+
+        var fullscreen_label = new Gtk.Label ("""<span size="smaller" weight="600">%s</span>""".printf ("FULLSCREEN"));
+        fullscreen_label.use_markup = true;
+
+        var letterbox_label = new Gtk.Label ("""<span size="smaller" weight="600">%s</span>""".printf ("LETTERBOX"));
+        letterbox_label.use_markup = true;
+
+        var letterbox_grid = new Gtk.Grid ();
+        letterbox_grid.column_spacing = 6;
+        letterbox_grid.halign = Gtk.Align.START;
+        letterbox_grid.valign = Gtk.Align.END;
+
+        letterbox_grid.add (fullscreen_label);
+        letterbox_grid.add (letterbox_switch);
+        letterbox_grid.add (letterbox_label);
 
         var button = new Gtk.Button.with_label ("De-squeeze");
         button.halign = Gtk.Align.END;
@@ -69,14 +95,25 @@ public class MainWindow : Gtk.Window {
         grid.margin_start = grid.margin_end = 12;
         grid.row_spacing = 24;
 
-        grid.attach (squeezed_image,  0, 0);
-        grid.attach (arrow,           1, 0);
-        grid.attach (image,           2, 0);
-        grid.attach (label,           0, 1, 3);
-        grid.attach (button,          0, 2, 3);
+        grid.attach (squeezed_image, 0, 0);
+        grid.attach (arrow,          1, 0);
+        grid.attach (image,          2, 0);
+        grid.attach (label,          0, 1, 3);
+        grid.attach (letterbox_grid, 0, 2);
+        grid.attach (button,         1, 2, 2);
 
         set_titlebar (header);
         add (grid);
+    }
+
+    private bool letterbox_transform_func (Binding binding, Value source_value, ref Value target_value) {
+        if (source_value == true) {
+            target_value = Gtk.Align.FILL;
+        } else {
+            target_value = Gtk.Align.CENTER;
+        }
+
+        return true;
     }
 }
 
