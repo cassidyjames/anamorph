@@ -69,20 +69,38 @@ public class MainWindow : Gtk.Window {
             letterbox_transform_func
         );
 
-        var fullscreen_label = new Gtk.Label ("""<span size="smaller" weight="600">%s</span>""".printf ("FULLSCREEN"));
+        var fullscreen_label = new Gtk.Label ("""<span size="x-small" weight="bold">%s</span>""".printf ("FULLSCREEN"));
+        fullscreen_label.tooltip_text = "Video will be desqueezed and resized to its natural height";
         fullscreen_label.use_markup = true;
 
-        var letterbox_label = new Gtk.Label ("""<span size="smaller" weight="600">%s</span>""".printf ("LETTERBOX"));
+        var fullscreen_box = new Gtk.EventBox ();
+        fullscreen_box.add_events (Gdk.EventMask.BUTTON_RELEASE_MASK);
+        fullscreen_box.add (fullscreen_label);
+        fullscreen_box.button_release_event.connect (() => {
+            letterbox_switch.active = false;
+            return Gdk.EVENT_STOP;
+        });
+
+        var letterbox_label = new Gtk.Label ("""<span size="x-small" weight="bold">%s</span>""".printf ("LETTERBOX"));
+        letterbox_label.tooltip_text = "Video will be desqueezed and black bars added to keep its original height";
         letterbox_label.use_markup = true;
+
+        var letterbox_box = new Gtk.EventBox ();
+        letterbox_box.add_events (Gdk.EventMask.BUTTON_RELEASE_MASK);
+        letterbox_box.add (letterbox_label);
+        letterbox_box.button_release_event.connect (() => {
+            letterbox_switch.active = true;
+            return Gdk.EVENT_STOP;
+        });
 
         var letterbox_grid = new Gtk.Grid ();
         letterbox_grid.column_spacing = 6;
         letterbox_grid.halign = Gtk.Align.START;
         letterbox_grid.valign = Gtk.Align.END;
 
-        letterbox_grid.add (fullscreen_label);
+        letterbox_grid.add (fullscreen_box);
         letterbox_grid.add (letterbox_switch);
-        letterbox_grid.add (letterbox_label);
+        letterbox_grid.add (letterbox_box);
 
         var button = new Gtk.Button.with_label ("De-squeeze");
         button.halign = Gtk.Align.END;
