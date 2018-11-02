@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Anamorph
 GenericName=Video De-squeezer
-Comment=De-squeeze anamorphic video
+Comment=De-squeeze anamorphic footage
 Categories=AudioVideo;Video;
 Exec=com.github.cassidyjames.anamorph
 Icon=com.github.cassidyjames.anamorph
