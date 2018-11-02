@@ -23,7 +23,6 @@ public class MainWindow : Gtk.Window {
     public MainWindow (Gtk.Application application) {
         Object (
             application: application,
-            // border_width: 12,
             icon_name: Anamorph.ID,
             resizable: false,
             title: _("Anamorph"),
@@ -44,94 +43,11 @@ public class MainWindow : Gtk.Window {
         header_context.add_class ("default-decoration");
         header_context.add_class (Gtk.STYLE_CLASS_FLAT);
 
-        // TODO: Use real filename
-        var label = new Gtk.Label ("De-squeezing will create a new file named <b>video.desqueezed.mp4</b> alongside the input file.");
-        label.max_width_chars = 50;
-        label.use_markup = true;
-        label.wrap = true;
-
-        var squeezed_image = new Gtk.Image.from_resource (Anamorph.PATH + "preview-squeezed.jpg");
-        squeezed_image.get_style_context ().add_class ("thumb");
-
-        var arrow = new Gtk.Image.from_icon_name ("go-next-symbolic", Gtk.IconSize.BUTTON);
-
-        var image = new Gtk.Image.from_resource (Anamorph.PATH + "preview.jpg");
-        image.valign = Gtk.Align.CENTER;
-        image.get_style_context ().add_class ("thumb");
-
-        var letterbox_switch = new Gtk.Switch ();
-        letterbox_switch.get_style_context ().add_class (Granite.STYLE_CLASS_MODE_SWITCH);
-        letterbox_switch.bind_property (
-            "active",
-            image,
-            "valign",
-            BindingFlags.SYNC_CREATE,
-            letterbox_transform_func
-        );
-
-        var fullscreen_label = new Gtk.Label ("""<span size="x-small" weight="bold">%s</span>""".printf ("FULLSCREEN"));
-        fullscreen_label.tooltip_text = "Video will be desqueezed and resized to its natural height";
-        fullscreen_label.use_markup = true;
-
-        var fullscreen_box = new Gtk.EventBox ();
-        fullscreen_box.add_events (Gdk.EventMask.BUTTON_RELEASE_MASK);
-        fullscreen_box.add (fullscreen_label);
-        fullscreen_box.button_release_event.connect (() => {
-            letterbox_switch.active = false;
-            return Gdk.EVENT_STOP;
-        });
-
-        var letterbox_label = new Gtk.Label ("""<span size="x-small" weight="bold">%s</span>""".printf ("LETTERBOX"));
-        letterbox_label.tooltip_text = "Video will be desqueezed and black bars added to keep its original height";
-        letterbox_label.use_markup = true;
-
-        var letterbox_box = new Gtk.EventBox ();
-        letterbox_box.add_events (Gdk.EventMask.BUTTON_RELEASE_MASK);
-        letterbox_box.add (letterbox_label);
-        letterbox_box.button_release_event.connect (() => {
-            letterbox_switch.active = true;
-            return Gdk.EVENT_STOP;
-        });
-
-        var letterbox_grid = new Gtk.Grid ();
-        letterbox_grid.column_spacing = 6;
-        letterbox_grid.halign = Gtk.Align.START;
-        letterbox_grid.valign = Gtk.Align.END;
-
-        letterbox_grid.add (fullscreen_box);
-        letterbox_grid.add (letterbox_switch);
-        letterbox_grid.add (letterbox_box);
-
-        var button = new Gtk.Button.with_label ("De-squeeze");
-        button.halign = Gtk.Align.END;
-        button.get_style_context ().add_class (Gtk.STYLE_CLASS_SUGGESTED_ACTION);
-
-        var grid = new Gtk.Grid ();
-        grid.column_spacing = 6;
-        grid.halign = grid.valign = Gtk.Align.CENTER;
-        grid.margin_bottom = 12;
-        grid.margin_start = grid.margin_end = 12;
-        grid.row_spacing = 24;
-
-        grid.attach (squeezed_image, 0, 0);
-        grid.attach (arrow,          1, 0);
-        grid.attach (image,          2, 0);
-        grid.attach (label,          0, 1, 3);
-        grid.attach (letterbox_grid, 0, 2);
-        grid.attach (button,         1, 2, 2);
+        // TODO: Add stack with views as children
+        var setup_view = new SetupView ();
+        add (setup_view);
 
         set_titlebar (header);
-        add (grid);
-    }
-
-    private bool letterbox_transform_func (Binding binding, Value source_value, ref Value target_value) {
-        if (source_value == true) {
-            target_value = Gtk.Align.FILL;
-        } else {
-            target_value = Gtk.Align.CENTER;
-        }
-
-        return true;
     }
 }
 
