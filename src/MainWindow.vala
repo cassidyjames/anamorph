@@ -41,7 +41,6 @@ public class MainWindow : Gtk.Window {
         var header_context = header.get_style_context ();
         header_context.add_class ("titlebar");
         header_context.add_class ("default-decoration");
-        header_context.add_class (Gtk.STYLE_CLASS_FLAT);
 
         var stack = new Gtk.Stack ();
         stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT_RIGHT;
