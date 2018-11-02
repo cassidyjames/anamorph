@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Anamorph
+GenericName=Video De-squeezer
+Comment=De-squeeze anamorphic video
+Categories=AudioVideo;Video;
+Exec=com.github.cassidyjames.anamorph
+Icon=com.github.cassidyjames.anamorph
+Terminal=false
+Type=Application
+X-GNOME-Gettext-Domain=com.github.cassidyjames.anamorph
+Keywords=anamorphic;lens;video;cinema;moment;squeeze;stretch;letterbox;aspect;ratio;📹;🎥;
+
