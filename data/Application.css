@@ -1,6 +1,14 @@
 .thumb {
-    background-color: black;
-    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.5);
-    margin: 12px;
+  background-color: black;
+  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.5);
+  margin: 12px;
+}
+
+.error .h1 {
+  color: @STRAWBERRY_100;
+}
+
+.success .h1 {
+  color: @LIME_100;
 }
 

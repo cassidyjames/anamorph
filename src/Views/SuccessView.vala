@@ -22,22 +22,33 @@
 public class SuccessView : Gtk.Grid {
     public SuccessView () {
         Object (
-            column_spacing: 6,
-            halign: Gtk.Align.CENTER,
-            margin_bottom: 12,
-            margin_end: 12,
-            margin_start: 12,
-            row_spacing: 12
+            halign: Gtk.Align.FILL
         );
     }
 
     construct {
-        var label = new Gtk.Label ("Done");
-        label.max_width_chars = 50;
-        label.use_markup = true;
-        label.wrap = true;
+        var welcome = new Granite.Widgets.Welcome (
+            "✔ All Set!",
+            "Your video has been de-squeezed."
+        );
+        welcome.get_style_context ().add_class ("success");
+        welcome.append (
+            "video-x-generic",
+            "Play Video",
+            "Watch your de-squeezed video."
+        );
+        welcome.append (
+            "folder-open",
+            "Browse to Video",
+            "Open your de-squeezed video in Files."
+        );
+        welcome.append (
+            "folder-videos",
+            "Open Another Video",
+            "Load another video to de-squeeze."
+        );
 
-        attach (label, 0, 0);
+        add (welcome);
     }
 }
 

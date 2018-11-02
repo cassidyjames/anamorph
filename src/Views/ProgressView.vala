@@ -27,17 +27,24 @@ public class ProgressView : Gtk.Grid {
             margin_bottom: 12,
             margin_end: 12,
             margin_start: 12,
-            row_spacing: 12
+            row_spacing: 12,
+            valign: Gtk.Align.CENTER
         );
     }
 
     construct {
-        var label = new Gtk.Label ("Progress…");
+        var spinner = new Gtk.Spinner ();
+        spinner.margin = 6;
+        spinner.start ();
+
+        var label = new Gtk.Label ("De-squeezing…");
         label.max_width_chars = 50;
         label.use_markup = true;
         label.wrap = true;
+        label.get_style_context ().add_class (Granite.STYLE_CLASS_H2_LABEL);
 
-        attach (label, 0, 0);
+        attach (spinner, 0, 0);
+        attach (label,   1, 0);
     }
 }
 

@@ -22,22 +22,28 @@
 public class ErrorView : Gtk.Grid {
     public ErrorView () {
         Object (
-            column_spacing: 6,
-            halign: Gtk.Align.CENTER,
-            margin_bottom: 12,
-            margin_end: 12,
-            margin_start: 12,
-            row_spacing: 12
+            halign: Gtk.Align.FILL
         );
     }
 
     construct {
-        var label = new Gtk.Label ("RIP");
-        label.max_width_chars = 50;
-        label.use_markup = true;
-        label.wrap = true;
+        var welcome = new Granite.Widgets.Welcome (
+            "✖ Uh-Oh",
+            "Your video has not been de-squeezed."
+        );
+        welcome.get_style_context ().add_class ("error");
+        welcome.append (
+            "view-refresh",
+            "Try Again",
+            "Attempt to de-squeeze with the same settings."
+        );
+        welcome.append (
+            "go-previous",
+            "Go Back",
+            "Go back to change settings."
+        );
 
-        attach (label, 0, 0);
+        add (welcome);
     }
 }
 
