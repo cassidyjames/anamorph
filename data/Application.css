@@ -12,3 +12,7 @@
   color: @LIME_100;
 }
 
+.debug * {
+  color: @GRAPE_100;
+}
+

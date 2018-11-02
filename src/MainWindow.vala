@@ -20,6 +20,8 @@
 */
 
 public class MainWindow : Gtk.Window {
+    private bool is_terminal = Posix.isatty (Posix.STDIN_FILENO);
+
     public MainWindow (Gtk.Application application) {
         Object (
             application: application,
@@ -60,16 +62,29 @@ public class MainWindow : Gtk.Window {
         var error_view = new ErrorView ();
         stack.add_titled (error_view, "error", "Error");
 
-        // FIXME: Temporary for prototyping/debugging
-        var switcher = new Gtk.StackSwitcher ();
-        switcher.halign = Gtk.Align.CENTER;
-        switcher.margin_bottom = 12;
-        switcher.stack = stack;
-
         var grid = new Gtk.Grid ();
         grid.orientation = Gtk.Orientation.VERTICAL;
-        grid.add (switcher);
         grid.add (stack);
+
+        // NOTE: Just for prototyping/debugging
+        if (is_terminal == true) {
+            var switcher = new Gtk.StackSwitcher ();
+            switcher.halign = Gtk.Align.CENTER;
+            switcher.stack = stack;
+
+            var debug_label = new Gtk.Label ("Debug Mode:");
+
+            var debug_grid = new Gtk.Grid ();
+            debug_grid.halign = Gtk.Align.CENTER;
+            debug_grid.margin = 12;
+            debug_grid.column_spacing = 6;
+            debug_grid.get_style_context ().add_class ("debug");
+
+            debug_grid.attach (debug_label, 0, 0);
+            debug_grid.attach (switcher,    1, 0);
+
+            grid.add (debug_grid);
+        }
 
         add (grid);
         set_titlebar (header);
