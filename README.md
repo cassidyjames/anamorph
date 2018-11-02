@@ -1,4 +1,4 @@
-![Anamorph icon](data/icons/64.svg)
+![Anamorph icon](data/icons/48.svg)
 
 # Anamorph
 
