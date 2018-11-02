@@ -100,6 +100,11 @@ public class SetupView : Gtk.Grid {
         attach (label,          0, 1, 3);
         attach (letterbox_grid, 0, 2);
         attach (button,         1, 2, 2);
+
+        button.clicked.connect (() => {
+            // TODO: Do the thing, then go to success/error view
+            critical ("Clicky");
+        });
     }
 
     private bool letterbox_transform_func (Binding binding, Value source_value, ref Value target_value) {

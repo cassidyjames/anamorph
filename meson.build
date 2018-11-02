@@ -16,7 +16,11 @@ executable (
     asresources,
     join_paths ('src', 'Application.vala'),
     join_paths ('src', 'MainWindow.vala'),
+    join_paths ('src', 'Views', 'ErrorView.vala'),
+    join_paths ('src', 'Views', 'ProgressView.vala'),
     join_paths ('src', 'Views', 'SetupView.vala'),
+    join_paths ('src', 'Views', 'SuccessView.vala'),
+    join_paths ('src', 'Views', 'WelcomeView.vala'),
     dependencies: [
         dependency ('granite'),
         dependency ('gtk+-3.0'),
