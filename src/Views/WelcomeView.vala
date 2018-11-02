@@ -22,22 +22,22 @@
 public class WelcomeView : Gtk.Grid {
     public WelcomeView () {
         Object (
-            column_spacing: 6,
-            halign: Gtk.Align.CENTER,
-            margin_bottom: 12,
-            margin_end: 12,
-            margin_start: 12,
-            row_spacing: 12
+            halign: Gtk.Align.FILL
         );
     }
 
     construct {
-        var label = new Gtk.Label ("Welcome");
-        label.max_width_chars = 50;
-        label.use_markup = true;
-        label.wrap = true;
+        var welcome = new Granite.Widgets.Welcome (
+            "De-Squeeze",
+            "Let’s get started."
+        );
+        welcome.append (
+            "folder-videos",
+            "Open Video",
+            "Load a video to de-squeeze."
+        );
 
-        attach (label, 0, 0);
+        add (welcome);
     }
 }
 
