@@ -29,7 +29,7 @@ public class WelcomeView : Gtk.Grid {
     construct {
         var welcome = new Granite.Widgets.Welcome (
             "De-Squeeze",
-            "Let’s get started."
+            "Open a video to get started."
         );
         welcome.append (
             "folder-videos",
