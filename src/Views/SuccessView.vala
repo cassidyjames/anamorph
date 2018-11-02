@@ -38,7 +38,7 @@ public class SuccessView : Gtk.Grid {
             "Watch your de-squeezed video."
         );
         welcome.append (
-            "folder-open",
+            "system-file-manager",
             "Browse to Video",
             "Open your de-squeezed video in Files."
         );
