@@ -10,7 +10,7 @@ Get that cinematic look from your video without opening a heavyweight editor. An
 
 ## 10% off Moment Lenses
 
-Looking for an awesome anamorphic lens to use with Anamorph? Grab one from [Moment][1] and get 10% off your first order using our referral link.
+Looking for an awesome anamorphic lens to use with Anamorph? Grab one from [Moment][1] and get 10% off your first order using our [referral link][1].
 
 [Shop Moment][1]
 
