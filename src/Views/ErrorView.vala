@@ -20,9 +20,12 @@
 */
 
 public class ErrorView : Gtk.Grid {
-    public ErrorView () {
+    public Gtk.Stack stack { get; construct; }
+
+    public ErrorView (Gtk.Stack _stack) {
         Object (
-            halign: Gtk.Align.FILL
+            halign: Gtk.Align.FILL,
+            stack: _stack
         );
     }
 
@@ -44,6 +47,22 @@ public class ErrorView : Gtk.Grid {
         );
 
         add (welcome);
+
+        welcome.activated.connect ((index) => {
+            switch (index) {
+                case 0:
+                    try {
+                        critical ("not implemented");
+                    } catch (Error e) {
+                        warning (e.message);
+                    }
+
+                    break;
+                case 1:
+                    stack.visible_child_name = "welcome";
+                    break;
+            }
+        });
     }
 }
 

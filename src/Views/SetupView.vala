@@ -20,12 +20,15 @@
 */
 
 public class SetupView : Gtk.Grid {
-    public SetupView () {
+    public Gtk.Stack stack { get; construct; }
+
+    public SetupView (Gtk.Stack _stack) {
         Object (
             column_spacing: 6,
             halign: Gtk.Align.CENTER,
             margin: 12,
-            row_spacing: 12
+            row_spacing: 12,
+            stack: _stack
         );
     }
 
@@ -100,8 +103,7 @@ public class SetupView : Gtk.Grid {
         attach (button,         1, 2, 2);
 
         button.clicked.connect (() => {
-            // TODO: Do the thing, then go to success/error view
-            critical ("Clicky");
+            stack.visible_child_name = "success";
         });
     }
 

@@ -20,7 +20,9 @@
 */
 
 public class ProgressView : Gtk.Grid {
-    public ProgressView () {
+    public Gtk.Stack stack { get; construct; }
+
+    public ProgressView (Gtk.Stack _stack) {
         Object (
             column_spacing: 6,
             halign: Gtk.Align.CENTER,
@@ -28,6 +30,7 @@ public class ProgressView : Gtk.Grid {
             margin_end: 12,
             margin_start: 12,
             row_spacing: 12,
+            stack: _stack,
             valign: Gtk.Align.CENTER
         );
     }

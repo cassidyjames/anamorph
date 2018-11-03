@@ -20,9 +20,12 @@
 */
 
 public class WelcomeView : Gtk.Grid {
-    public WelcomeView () {
+    public Gtk.Stack stack { get; construct; }
+
+    public WelcomeView (Gtk.Stack _stack) {
         Object (
-            halign: Gtk.Align.FILL
+            halign: Gtk.Align.FILL,
+            stack: _stack
         );
     }
 
@@ -47,11 +50,7 @@ public class WelcomeView : Gtk.Grid {
         welcome.activated.connect ((index) => {
             switch (index) {
                 case 0:
-                    try {
-                        critical ("Opening not implemented");
-                    } catch (Error e) {
-                        warning (e.message);
-                    }
+                    stack.visible_child_name = "setup";
 
                     break;
                 case 1:

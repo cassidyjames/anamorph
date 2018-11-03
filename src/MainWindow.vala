@@ -47,19 +47,19 @@ public class MainWindow : Gtk.Window {
         var stack = new Gtk.Stack ();
         stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT_RIGHT;
 
-        var welcome_view = new WelcomeView ();
+        var welcome_view = new WelcomeView (stack);
         stack.add_titled (welcome_view, "welcome", "Welcome");
 
-        var setup_view = new SetupView ();
+        var setup_view = new SetupView (stack);
         stack.add_titled (setup_view, "setup", "Setup");
 
-        var progress_view = new ProgressView ();
+        var progress_view = new ProgressView (stack);
         stack.add_titled (progress_view, "progress", "Progress");
 
-        var success_view = new SuccessView ();
+        var success_view = new SuccessView (stack);
         stack.add_titled (success_view, "success", "Success");
 
-        var error_view = new ErrorView ();
+        var error_view = new ErrorView (stack);
         stack.add_titled (error_view, "error", "Error");
 
         var grid = new Gtk.Grid ();

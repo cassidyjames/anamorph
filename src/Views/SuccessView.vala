@@ -20,9 +20,12 @@
 */
 
 public class SuccessView : Gtk.Grid {
-    public SuccessView () {
+    public Gtk.Stack stack { get; construct; }
+
+    public SuccessView (Gtk.Stack _stack) {
         Object (
-            halign: Gtk.Align.FILL
+            halign: Gtk.Align.FILL,
+            stack: _stack
         );
     }
 
@@ -49,6 +52,20 @@ public class SuccessView : Gtk.Grid {
         );
 
         add (welcome);
+
+        welcome.activated.connect ((index) => {
+            switch (index) {
+                case 0:
+                case 1:
+                    critical ("Not implemented");
+
+                    break;
+                case 2:
+                    stack.visible_child_name = "welcome";
+
+                    break;
+            }
+        });
     }
 }
 

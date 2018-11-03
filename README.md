@@ -28,7 +28,7 @@ Anamorph is designed and developed on and for [elementary OS]. Purchasing throug
 
 [![Get it on AppCenter](https://appcenter.elementary.io/badge.svg)][AppCenter]
 
-Versions of Anamorph may have been built and made available elsewhere by third-parties. These builds may have modifications or changes and **are not provided nor supported by me**. The only supported version is distributed via AppCenter on elementary OS.
+Versions of Anamorph may have been built and made available elsewhere by third-parties. These builds may have modifications or changes and **are not provided nor supported by me**. The only supported version is distributed via [AppCenter] on elementary OS.
 
 ## Developing and Building
 
