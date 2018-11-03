@@ -64,6 +64,7 @@ public class Anamorph : Gtk.Application {
     }
 
     private static int main (string[] args) {
+        Gst.init (ref args);
         Gtk.init (ref args);
 
         var app = new Anamorph ();

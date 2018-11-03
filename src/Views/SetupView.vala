@@ -39,6 +39,8 @@ public class SetupView : Gtk.Grid {
         label.use_markup = true;
         label.wrap = true;
 
+        var desqueezer = new GstreamerDesqueezer ("http://www.w3schools.com/html/mov_bbb.mp4");
+
         var squeezed_image = new Gtk.Image.from_resource (Anamorph.PATH + "preview-squeezed.jpg");
         squeezed_image.get_style_context ().add_class ("thumb");
 
@@ -95,9 +97,9 @@ public class SetupView : Gtk.Grid {
         button.halign = Gtk.Align.END;
         button.get_style_context ().add_class (Gtk.STYLE_CLASS_SUGGESTED_ACTION);
 
-        attach (squeezed_image, 0, 0);
+        attach (desqueezer.input_preview_area, 0, 0);
         attach (arrow,          1, 0);
-        attach (image,          2, 0);
+        attach (desqueezer.output_preview_area,          2, 0);
         attach (label,          0, 1, 3);
         attach (letterbox_grid, 0, 2);
         attach (button,         1, 2, 2);
@@ -105,6 +107,8 @@ public class SetupView : Gtk.Grid {
         button.clicked.connect (() => {
             stack.visible_child_name = "success";
         });
+
+        desqueezer.play ();
     }
 
     private bool letterbox_transform_func (Binding binding, Value source_value, ref Value target_value) {

@@ -11,24 +11,27 @@ asresources = gnome.compile_resources (
     c_name: 'as'
 )
 
+anamorph_files = files (
+    'src/Application.vala',
+    'src/GstreamerDesqueezer.vala',
+    'src/MainWindow.vala',
+    'src/Views/ErrorView.vala',
+    'src/Views/ProgressView.vala',
+    'src/Views/SetupView.vala',
+    'src/Views/SuccessView.vala',
+    'src/Views/WelcomeView.vala'
+)
+
 executable (
     meson.project_name (),
     asresources,
-    join_paths ('src', 'Application.vala'),
-    join_paths ('src', 'MainWindow.vala'),
-    join_paths ('src', 'Views', 'ErrorView.vala'),
-    join_paths ('src', 'Views', 'ProgressView.vala'),
-    join_paths ('src', 'Views', 'SetupView.vala'),
-    join_paths ('src', 'Views', 'SuccessView.vala'),
-    join_paths ('src', 'Views', 'WelcomeView.vala'),
+    anamorph_files,
     dependencies: [
-        dependency ('gdk-x11-3.0'),
         dependency ('glib-2.0'),
         dependency ('granite'),
         dependency ('gtk+-3.0'),
-        dependency ('x11'),
-        dependency ('xtst'),
         meson.get_compiler('vala').find_library('posix'),
+        dependency ('gstreamer-1.0')
     ],
     install: true
 )
