@@ -22,6 +22,7 @@
 public class Anamorph : Gtk.Application {
     public const string ID = "com.github.cassidyjames.anamorph";
     public const string PATH = "/com/github/cassidyjames/anamorph/";
+    public const string MOMENT_REFERRAL = "https://www.shopmoment.com/shop?tap_a=30146-d3ce98&tap_s=363496-01e37a&utm_medium=referral&utm_source=ambassador&utm_campaign=Moment%2BReferral%2BProgram&utm_content=cassidyblaede";
 
     public Anamorph () {
         Object (

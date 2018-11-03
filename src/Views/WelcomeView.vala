@@ -36,8 +36,34 @@ public class WelcomeView : Gtk.Grid {
             "Open Video",
             "Load a video to de-squeeze."
         );
+        welcome.append (
+            "payment-card",
+            "Get a Lens",
+            "Save 10% on an Anamorphic Lens from Moment."
+        );
 
         add (welcome);
+
+        welcome.activated.connect ((index) => {
+            switch (index) {
+                case 0:
+                    try {
+                        critical ("Opening not implemented");
+                    } catch (Error e) {
+                        warning (e.message);
+                    }
+
+                    break;
+                case 1:
+                    try {
+                        AppInfo.launch_default_for_uri (Anamorph.MOMENT_REFERRAL, null);
+                    } catch (Error e) {
+                        warning (e.message);
+                    }
+
+                    break;
+            }
+        });
     }
 }
 
