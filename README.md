@@ -8,6 +8,8 @@
 
 Get that cinematic look from your video without opening a heavyweight editor. Anamorph de-squeezes anamorphic video shot with an anamorphic lens on a 16:9 sensor, like the one in your smartphone. Perfect for the Moment Anamorphic lens or other lenses designed for Pixel, Galaxy, and iPhone.
 
+Currently supports 1.33× anamorphic, like the [Moment][1] Anamorphic lens.
+
 ## 10% off Moment Lenses
 
 Looking for an awesome anamorphic lens to use with Anamorph? Grab one from [Moment][1] and get 10% off your first order using our [referral link][1].
