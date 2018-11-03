@@ -7,7 +7,8 @@
   <name>Anamorph</name>
   <summary>De-squeeze anamorphic footage</summary>
   <description>
-    <p>Get that cinematic look from your video without opening a heavyweight editor. Anamorph de-squeezes anamorphic video shot with an anamorphic lens on a 16:9 sensor, like the one in your smartphone. Perfect for the Moment Anamorphic lens or other lenses designed for Pixel, Galaxy, and iPhone.</p>
+    <p>Get that cinematic look from your video without opening a heavyweight editor. Anamorph de-squeezes anamorphic video shot with an anamorphic lens on a 16:9 sensor, like the one in your smartphone. Perfect for the Moment Anamorphic lens or other lenses designed for Pixel, Galaxy, iPhone, etc.</p>
+    <p>Currently supports 1.33× anamorphic, like the Moment Anamorphic lens.</p>
   </description>
   <provides>
     <binary>com.github.cassidyjames.anamorph</binary>
@@ -59,7 +60,7 @@
   <custom>
     <value key="x-appcenter-color-primary">#525</value>
     <value key="x-appcenter-color-primary-text">#fffffc</value>
-    <value key="x-appcenter-suggested-price">3</value>
+    <value key="x-appcenter-suggested-price">7</value>
   </custom>
 </component>
 
