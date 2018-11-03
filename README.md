@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/cassidyjames/anamorph.svg?branch=master)](https://travis-ci.org/cassidyjames/anamorph)
+[![Build Status](https://travis-ci.com/cassidyjames/anamorph.svg?branch=master)](https://travis-ci.com/cassidyjames/anamorph)
 
 <p align="center">
   <img src="data/icons/128.svg" alt="Icon" />
