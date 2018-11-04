@@ -57,11 +57,13 @@ public class GstreamerDesqueezer : Object {
         var converter = Gst.ElementFactory.make ("videoconvert", "converter");
         var input_preview_gtk_sink = Gst.ElementFactory.make ("gtksink", "input_preview");
         var output_preview_gtk_sink = Gst.ElementFactory.make ("gtksink", "output_preview");
+        var input_queue = Gst.ElementFactory.make ("queue", "input_queue");
+        var output_queue = Gst.ElementFactory.make ("queue", "output_queue");
 
         input_preview_gtk_sink.get ("widget", out _input_preview_area);
         output_preview_gtk_sink.get ("widget", out _output_preview_area);
 
-        pipeline.add_many (decodebin, tee, converter, input_preview_gtk_sink, output_preview_gtk_sink);
+        pipeline.add_many (decodebin, tee, converter, input_queue, output_queue, input_preview_gtk_sink, output_preview_gtk_sink);
 
         decodebin.pad_added.connect ((pad) => { 
             var pad_link_return = pad.link (converter.get_static_pad ("sink")); 
@@ -70,8 +72,11 @@ public class GstreamerDesqueezer : Object {
         var input_split = tee.get_request_pad ("src_%u");
         var output_split = tee.get_request_pad ("src_%u");
 
-        input_split.link (input_preview_gtk_sink.get_static_pad ("sink"));
-        output_split.link (output_preview_gtk_sink.get_static_pad ("sink"));
+        input_split.link (input_queue.get_static_pad ("sink"));
+        output_split.link (output_queue.get_static_pad ("sink"));
+
+        input_queue.link (input_preview_gtk_sink);
+        output_queue.link (output_preview_gtk_sink);
 
         decodebin["uri"] = input_path;
         converter.link (tee);
