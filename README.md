@@ -36,8 +36,13 @@ Development is targeted at elementary OS Juno. If you want to hack on and build 
 
 * libgranite-dev
 * libgtk-3-dev
+* libgstreamer1.0-dev
 * meson
 * valac
+
+Anamorph also has the following runtime dependency:
+
+* gstreamer1.0-gtk3 (containing the gtksink plugin)
 
 You can install them on elementary OS Juno with:
 
