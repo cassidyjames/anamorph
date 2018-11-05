@@ -46,28 +46,62 @@ public class GstreamerDesqueezer : Object {
         Object (input_path: path);
     }
 
+    private GstreamerMetadataReader metadata_reader;
+
+    private Gst.Element input_preview_gtk_sink;
+    private Gst.Element output_preview_gtk_sink;
+
     private Gst.Pipeline pipeline;
+    private Gst.Element tee;
 
     construct {
+        metadata_reader = new GstreamerMetadataReader (input_path);
+        metadata_reader.ready.connect (construct_pipelines);
+        metadata_reader.read ();
+
+        input_preview_gtk_sink = Gst.ElementFactory.make ("gtksink", "input_preview");
+        output_preview_gtk_sink = Gst.ElementFactory.make ("gtksink", "output_preview");
+
+        input_preview_gtk_sink.get ("widget", out _input_preview_area);
+        output_preview_gtk_sink.get ("widget", out _output_preview_area);
+    }
+
+    private void construct_pipelines () {
         pipeline = new Gst.Pipeline (null);
         pipeline.get_bus ().add_watch (Priority.DEFAULT, on_bus_message);
 
         var decodebin = Gst.ElementFactory.make ("uridecodebin", "input");
-        var tee = Gst.ElementFactory.make ("tee", "splitter");
-        var converter = Gst.ElementFactory.make ("videoconvert", "converter");
-        var input_preview_gtk_sink = Gst.ElementFactory.make ("gtksink", "input_preview");
-        var output_preview_gtk_sink = Gst.ElementFactory.make ("gtksink", "output_preview");
+        tee = Gst.ElementFactory.make ("tee", "splitter");
+        var output_convert = Gst.ElementFactory.make ("videoconvert", "output_converter");
+        var input_convert = Gst.ElementFactory.make ("videoconvert", "input_converter");
         var input_queue = Gst.ElementFactory.make ("queue", "input_queue");
         var output_queue = Gst.ElementFactory.make ("queue", "output_queue");
+        var output_scaler = Gst.ElementFactory.make ("videoscale", "output_scaler");
+        var input_scaler = Gst.ElementFactory.make ("videoscale", "input_scaler");
+        var input_caps_filter = Gst.ElementFactory.make ("capsfilter", "input_filter");
+        var output_caps_filter = Gst.ElementFactory.make ("capsfilter", "output_filter");
 
-        input_preview_gtk_sink.get ("widget", out _input_preview_area);
-        output_preview_gtk_sink.get ("widget", out _output_preview_area);
+        var input_caps = new Gst.Caps.simple ("video/x-raw", 
+            "width", typeof(int), metadata_reader.video_width, 
+            "height", typeof(int), metadata_reader.video_height,
+            "pixel-aspect-ratio", typeof(Gst.Fraction), 1, 1
+        );
 
-        pipeline.add_many (decodebin, tee, converter, input_queue, output_queue, input_preview_gtk_sink, output_preview_gtk_sink);
+        var output_caps = new Gst.Caps.simple ("video/x-raw", 
+            "width", typeof(int), (int)(metadata_reader.video_width * 1.33f),
+            "height", typeof(int), metadata_reader.video_height, 
+            "pixel-aspect-ratio", typeof (Gst.Fraction), 1, 1
+        );
 
-        decodebin.pad_added.connect ((pad) => { 
-            var pad_link_return = pad.link (converter.get_static_pad ("sink")); 
-        });
+        input_caps_filter["caps"] = input_caps;
+        output_caps_filter["caps"] = output_caps;
+
+        input_scaler["add-borders"] = false;
+        output_scaler["add-borders"] = false;
+
+        pipeline.add_many (decodebin, tee, input_queue, output_queue, input_scaler, output_scaler, input_caps_filter, output_caps_filter, output_convert, input_convert, input_preview_gtk_sink, output_preview_gtk_sink);
+
+        decodebin.pad_added.connect (on_pad_added);
 
         var input_split = tee.get_request_pad ("src_%u");
         var output_split = tee.get_request_pad ("src_%u");
@@ -75,11 +109,25 @@ public class GstreamerDesqueezer : Object {
         input_split.link (input_queue.get_static_pad ("sink"));
         output_split.link (output_queue.get_static_pad ("sink"));
 
-        input_queue.link (input_preview_gtk_sink);
-        output_queue.link (output_preview_gtk_sink);
+        input_queue.link_many (input_scaler, input_caps_filter, input_convert, input_preview_gtk_sink);
+        output_queue.link_many (output_scaler, output_caps_filter, output_convert, output_preview_gtk_sink);
 
         decodebin["uri"] = input_path;
-        converter.link (tee);
+    }
+
+    private void on_pad_added (Gst.Element src, Gst.Pad pad) {
+        var sink_pad = tee.get_static_pad ("sink");
+        if (sink_pad.is_linked ()) {
+            return;
+        }
+
+        var new_pad_caps = pad.query_caps (null);
+        weak Gst.Structure new_pad_struct = new_pad_caps.get_structure (0);
+        var new_pad_type = new_pad_struct.get_name ();
+        warning (new_pad_type);
+        if (new_pad_type.has_prefix ("video/x-raw")) {
+            pad.link (sink_pad);
+        }
     }
 
     private bool on_bus_message (Gst.Bus bus, Gst.Message message) {

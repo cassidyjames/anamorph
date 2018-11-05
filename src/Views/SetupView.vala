@@ -105,10 +105,9 @@ public class SetupView : Gtk.Grid {
         attach (button,         1, 2, 2);
 
         button.clicked.connect (() => {
-            stack.visible_child_name = "success";
+            desqueezer.play ();
+            //stack.visible_child_name = "success";
         });
-
-        desqueezer.play ();
     }
 
     private bool letterbox_transform_func (Binding binding, Value source_value, ref Value target_value) {
