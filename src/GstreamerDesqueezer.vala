@@ -76,8 +76,17 @@ public class GstreamerDesqueezer : Object {
         var input_convert = Gst.ElementFactory.make ("videoconvert", "input_converter");
         var input_queue = Gst.ElementFactory.make ("queue", "input_queue");
         var output_queue = Gst.ElementFactory.make ("queue", "output_queue");
-        var output_scaler = Gst.ElementFactory.make ("videoscale", "output_scaler");
-        var input_scaler = Gst.ElementFactory.make ("videoscale", "input_scaler");
+        var output_scaler = Gst.ElementFactory.make ("vaapipostproc", "output_scaler");
+        var input_scaler = Gst.ElementFactory.make ("vaapipostproc", "input_scaler");
+        if (input_scaler == null) {
+            warning ("falling back to software scaler");
+            input_scaler = Gst.ElementFactory.make ("videoscale", "input_scaler");
+        }
+
+        if (output_scaler == null) {
+            output_scaler = Gst.ElementFactory.make ("videoscale", "output_scaler");
+        }
+
         var input_caps_filter = Gst.ElementFactory.make ("capsfilter", "input_filter");
         var output_caps_filter = Gst.ElementFactory.make ("capsfilter", "output_filter");
 
