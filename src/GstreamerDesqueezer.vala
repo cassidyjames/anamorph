@@ -21,6 +21,7 @@
 
 public class GstreamerDesqueezer : Object {
     public string input_path { get; set construct; }
+    public float stretch_factor { get; set construct; }
 
     private Gtk.Widget? _input_preview_area;
     public Gtk.Widget? input_preview_area {
@@ -42,8 +43,8 @@ public class GstreamerDesqueezer : Object {
         }
     }
 
-    public GstreamerDesqueezer (string path) {
-        Object (input_path: path);
+    public GstreamerDesqueezer (string path, float stretch_factor = 1.33f) {
+        Object (input_path: path, stretch_factor: stretch_factor);
     }
 
     private GstreamerMetadataReader metadata_reader;
@@ -106,7 +107,7 @@ public class GstreamerDesqueezer : Object {
         );
 
         var output_caps = new Gst.Caps.simple ("video/x-raw", 
-            "width", typeof(int), (int)(metadata_reader.video_width * 1.33f),
+            "width", typeof(int), (int)(metadata_reader.video_width * stretch_factor),
             "height", typeof(int), metadata_reader.video_height, 
             "pixel-aspect-ratio", typeof (Gst.Fraction), 1, 1
         );
@@ -114,7 +115,12 @@ public class GstreamerDesqueezer : Object {
         input_caps_filter["caps"] = input_caps;
         output_caps_filter["caps"] = output_caps;
 
-        pipeline.add_many (decodebin, tee, input_queue, output_queue, input_scaler, output_scaler, input_caps_filter, output_caps_filter, output_convert, input_convert, input_preview_gtk_sink, output_preview_gtk_sink);
+        pipeline.add_many (
+            decodebin, // Decode the input file/stream
+            tee, // Split it
+            input_queue, input_scaler, input_caps_filter, input_convert, input_preview_gtk_sink, // Original size pipeline
+            output_queue, output_scaler, output_caps_filter, output_convert, output_preview_gtk_sink // Desqueezed pipeline
+        );
 
         decodebin.pad_added.connect (on_pad_added);
 
