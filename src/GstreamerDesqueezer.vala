@@ -64,6 +64,9 @@ public class GstreamerDesqueezer : Object {
 
         input_preview_gtk_sink.get ("widget", out _input_preview_area);
         output_preview_gtk_sink.get ("widget", out _output_preview_area);
+
+        _input_preview_area.set_size_request (360, 203);
+        _output_preview_area.set_size_request (360, 203);
     }
 
     private void construct_pipelines () {
@@ -76,15 +79,21 @@ public class GstreamerDesqueezer : Object {
         var input_convert = Gst.ElementFactory.make ("videoconvert", "input_converter");
         var input_queue = Gst.ElementFactory.make ("queue", "input_queue");
         var output_queue = Gst.ElementFactory.make ("queue", "output_queue");
+
+        // Try using a hardware accelerated scaler
         var output_scaler = Gst.ElementFactory.make ("vaapipostproc", "output_scaler");
         var input_scaler = Gst.ElementFactory.make ("vaapipostproc", "input_scaler");
+
+        // If it's not available, fall back to software
         if (input_scaler == null) {
             warning ("falling back to software scaler");
             input_scaler = Gst.ElementFactory.make ("videoscale", "input_scaler");
+            input_scaler["add-borders"] = false;
         }
 
         if (output_scaler == null) {
             output_scaler = Gst.ElementFactory.make ("videoscale", "output_scaler");
+            output_scaler["add-borders"] = false;
         }
 
         var input_caps_filter = Gst.ElementFactory.make ("capsfilter", "input_filter");
@@ -104,9 +113,6 @@ public class GstreamerDesqueezer : Object {
 
         input_caps_filter["caps"] = input_caps;
         output_caps_filter["caps"] = output_caps;
-
-        input_scaler["add-borders"] = false;
-        output_scaler["add-borders"] = false;
 
         pipeline.add_many (decodebin, tee, input_queue, output_queue, input_scaler, output_scaler, input_caps_filter, output_caps_filter, output_convert, input_convert, input_preview_gtk_sink, output_preview_gtk_sink);
 
