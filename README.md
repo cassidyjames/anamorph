@@ -16,9 +16,9 @@ Get that cinematic look from your video without opening a heavyweight editor. An
 
 Currently supports 1.33× anamorphic, like the [Moment] Anamorphic lens.
 
-## 10% off Moment Lenses
+## Get Moment Lenses
 
-Looking for an awesome anamorphic lens to use with Anamorph? Grab one from [Moment] and get 10% off your first order using our [referral link][Moment].
+Looking for an awesome anamorphic lens to use with Anamorph? Grab one from [Moment] using my [referral link][Moment] to support me! A small portion of each purchase is shared with me.
 
 [Shop Moment][Moment]
 
