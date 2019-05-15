@@ -42,7 +42,7 @@ public class WelcomeView : Gtk.Grid {
         welcome.append (
             "payment-card",
             "Get a Lens",
-            "Save 10% on an Anamorphic Lens from Moment."
+            "Buy gear from Moment and help support Anamorph."
         );
 
         add (welcome);
