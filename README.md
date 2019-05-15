@@ -47,7 +47,7 @@ Anamorph also has the following runtime dependency:
 You can install them on elementary OS Juno with:
 
 ```shell
-sudo apt install elementary-sdk
+sudo apt install elementary-sdk libgstreamer1.0-dev gstreamer1.0-gtk3
 ```
 
 Run `meson build` to configure the build environment and run `ninja` to build:
