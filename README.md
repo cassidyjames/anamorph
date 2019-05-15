@@ -65,6 +65,10 @@ sudo ninja install
 com.github.cassidyjames.anamorph
 ```
 
+## Test Footage
+
+An album of un-de-squeezed (so… squeezed?) footage taken with the Moment Anamorphic lens is available [here](https://photos.app.goo.gl/nAtJjwVDEEQxRb1DA) for testing.
+
 ## Special Thanks
 
 - [Micah Ilbery](https://github.com/micahilbery) for the incredible icons
