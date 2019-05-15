@@ -1,5 +1,5 @@
 Format: http://dep.debian.net/deps/dep5
-Upstream-Name: ephemeral
+Upstream-Name: anamorph
 Source: https://github.com/cassidyjames/anamorph
 
 Files: src/* data/* debian/*
