@@ -43,8 +43,8 @@ public class GstreamerDesqueezer : Object {
         }
     }
 
-    public GstreamerDesqueezer (string path, float stretch_factor = 1.33f) {
-        Object (input_path: path, stretch_factor: stretch_factor);
+    public GstreamerDesqueezer (float stretch_factor = 1.33f) {
+        Object (stretch_factor: stretch_factor);
     }
 
     private GstreamerMetadataReader metadata_reader;
@@ -56,10 +56,6 @@ public class GstreamerDesqueezer : Object {
     private Gst.Element tee;
 
     construct {
-        metadata_reader = new GstreamerMetadataReader (input_path);
-        metadata_reader.ready.connect (construct_pipelines);
-        metadata_reader.read ();
-
         input_preview_gtk_sink = Gst.ElementFactory.make ("gtksink", "input_preview");
         output_preview_gtk_sink = Gst.ElementFactory.make ("gtksink", "output_preview");
 
@@ -68,6 +64,15 @@ public class GstreamerDesqueezer : Object {
 
         _input_preview_area.set_size_request (360, 203);
         _output_preview_area.set_size_request (360, 203);
+    }
+
+    public void set_file (string uri) {
+        input_path = uri;
+
+        warning ("set_file: %s", input_path);
+        metadata_reader = new GstreamerMetadataReader (input_path);
+        metadata_reader.ready.connect (construct_pipelines);
+        metadata_reader.read ();
     }
 
     private void construct_pipelines () {
@@ -100,15 +105,15 @@ public class GstreamerDesqueezer : Object {
         var input_caps_filter = Gst.ElementFactory.make ("capsfilter", "input_filter");
         var output_caps_filter = Gst.ElementFactory.make ("capsfilter", "output_filter");
 
-        var input_caps = new Gst.Caps.simple ("video/x-raw", 
-            "width", typeof(int), metadata_reader.video_width, 
+        var input_caps = new Gst.Caps.simple ("video/x-raw",
+            "width", typeof(int), metadata_reader.video_width,
             "height", typeof(int), metadata_reader.video_height,
             "pixel-aspect-ratio", typeof(Gst.Fraction), 1, 1
         );
 
-        var output_caps = new Gst.Caps.simple ("video/x-raw", 
+        var output_caps = new Gst.Caps.simple ("video/x-raw",
             "width", typeof(int), (int)(metadata_reader.video_width * stretch_factor),
-            "height", typeof(int), metadata_reader.video_height, 
+            "height", typeof(int), metadata_reader.video_height,
             "pixel-aspect-ratio", typeof (Gst.Fraction), 1, 1
         );
 
@@ -134,6 +139,8 @@ public class GstreamerDesqueezer : Object {
         output_queue.link_many (output_scaler, output_caps_filter, output_convert, output_preview_gtk_sink);
 
         decodebin["uri"] = input_path;
+
+        pipeline.set_state (Gst.State.PAUSED);
     }
 
     private void on_pad_added (Gst.Element src, Gst.Pad pad) {

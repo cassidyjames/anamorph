@@ -20,12 +20,12 @@
 */
 
 public class WelcomeView : Gtk.Grid {
+    public signal void open_file (string path);
     public Gtk.Stack stack { get; construct; }
 
-    public WelcomeView (Gtk.Stack _stack) {
+    public WelcomeView () {
         Object (
-            halign: Gtk.Align.FILL,
-            stack: _stack
+            halign: Gtk.Align.FILL
         );
     }
 
@@ -50,7 +50,22 @@ public class WelcomeView : Gtk.Grid {
         welcome.activated.connect ((index) => {
             switch (index) {
                 case 0:
-                    stack.visible_child_name = "setup";
+                    var filter = new Gtk.FileFilter ();
+                    filter.add_mime_type ("video/*");
+
+                    var chooser = new Gtk.FileChooserNative (
+                        _("Open Video"),
+                        get_parent_window () as Gtk.Window?,
+                        Gtk.FileChooserAction.OPEN,
+                        _("_Open"),
+                        _("_Cancel")
+                    );
+
+                    chooser.add_filter (filter);
+
+                    if (chooser.run () == Gtk.ResponseType.ACCEPT) {
+                        open_file (chooser.get_uri ());
+                    }
 
                     break;
                 case 1:

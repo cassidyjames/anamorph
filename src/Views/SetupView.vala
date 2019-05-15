@@ -21,6 +21,7 @@
 
 public class SetupView : Gtk.Grid {
     public Gtk.Stack stack { get; construct; }
+    private GstreamerDesqueezer desqueezer;
 
     public SetupView (Gtk.Stack _stack) {
         Object (
@@ -39,7 +40,7 @@ public class SetupView : Gtk.Grid {
         label.use_markup = true;
         label.wrap = true;
 
-        var desqueezer = new GstreamerDesqueezer ("http://www.w3schools.com/html/mov_bbb.mp4");
+        desqueezer = new GstreamerDesqueezer ();
 
         var squeezed_image = new Gtk.Image.from_resource (Anamorph.PATH + "preview-squeezed.jpg");
         squeezed_image.get_style_context ().add_class ("thumb");
@@ -118,6 +119,10 @@ public class SetupView : Gtk.Grid {
         }
 
         return true;
+    }
+
+    public void open_file (string path) {
+        desqueezer.set_file (path);
     }
 }
 

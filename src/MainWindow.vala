@@ -47,7 +47,7 @@ public class MainWindow : Gtk.Window {
         var stack = new Gtk.Stack ();
         stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT_RIGHT;
 
-        var welcome_view = new WelcomeView (stack);
+        var welcome_view = new WelcomeView ();
         stack.add_titled (welcome_view, "welcome", "Welcome");
 
         var setup_view = new SetupView (stack);
@@ -61,6 +61,11 @@ public class MainWindow : Gtk.Window {
 
         var error_view = new ErrorView (stack);
         stack.add_titled (error_view, "error", "Error");
+
+        welcome_view.open_file.connect ((file) => {
+            setup_view.open_file (file);
+            stack.visible_child_name = "setup";
+        });
 
         var grid = new Gtk.Grid ();
         grid.orientation = Gtk.Orientation.VERTICAL;
