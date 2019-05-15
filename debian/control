@@ -4,6 +4,7 @@ Priority: extra
 Maintainer: Cassidy James Blaede <c@ssidyjam.es>
 Build-Depends: debhelper (>= 9),
                libgranite-dev,
+               libgstreamer1.0-dev,
                libgtk-3-dev,
                meson,
                valac
@@ -11,6 +12,6 @@ Standards-Version: 3.9.3
 
 Package: com.github.cassidyjames.anamorph
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}, gstreamer1.0-gtk3
 Description: Anamorph
  De-squeeze anamorphic footage
