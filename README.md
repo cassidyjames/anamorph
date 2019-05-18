@@ -47,7 +47,7 @@ Anamorph also has the following runtime dependency:
 You can install them on elementary OS Juno with:
 
 ```shell
-sudo apt install elementary-sdk
+sudo apt install elementary-sdk libgstreamer1.0-dev gstreamer1.0-gtk3
 ```
 
 Run `meson build` to configure the build environment and run `ninja` to build:
@@ -64,6 +64,10 @@ To install, use `ninja install`, then execute with `com.github.cassidyjames.anam
 sudo ninja install
 com.github.cassidyjames.anamorph
 ```
+
+## Test Footage
+
+An album of un-de-squeezed (so… squeezed?) footage taken with the Moment Anamorphic lens is available [here](https://photos.app.goo.gl/nAtJjwVDEEQxRb1DA) for testing.
 
 ## Special Thanks
 
