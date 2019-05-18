@@ -22,11 +22,16 @@
 public class GstreamerFileDesqueezer : Object {
     public signal void complete ();
 
-    public string input_uri { get; set construct; }
+    public string input_uri { get; construct; }
+    public string output_path { get; construct; }
     public float stretch_factor { get; set construct; }
 
-    public GstreamerFileDesqueezer (string uri, float stretch_factor = 1.33f) {
-        Object (input_uri: uri, stretch_factor: stretch_factor);
+    public GstreamerFileDesqueezer (string uri, string output_path, float stretch_factor = 1.33f) {
+        Object (
+            input_uri: uri,
+            output_path: output_path,
+            stretch_factor: stretch_factor
+        );
     }
 
     private GstreamerMetadataReader metadata_reader;
@@ -78,7 +83,7 @@ public class GstreamerFileDesqueezer : Object {
 
         var webm_mux = Gst.ElementFactory.make ("webmmux", "webm_mux");
         var file_sink = Gst.ElementFactory.make ("filesink", "file_sink");
-        file_sink["location"] = "test.webm";
+        file_sink["location"] = output_path;
 
         pipeline.add_many (
             decodebin, // Decode the input file/stream

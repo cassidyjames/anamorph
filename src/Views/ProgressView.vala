@@ -51,8 +51,8 @@ public class ProgressView : Gtk.Grid {
         attach (label,   1, 0);
     }
 
-    public void set_uri (string uri) {
-        desqueezer = new GstreamerFileDesqueezer (uri);
+    public void set_paths (string input, string output) {
+        desqueezer = new GstreamerFileDesqueezer (input, output);
         desqueezer.complete.connect (() => complete ());
     }
 }

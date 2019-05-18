@@ -67,8 +67,8 @@ public class MainWindow : Gtk.Window {
             stack.visible_child_name = "setup";
         });
 
-        setup_view.desqueeze_file.connect ((uri) => {
-            progress_view.set_uri (uri);
+        setup_view.desqueeze_file.connect ((input_uri, output_path) => {
+            progress_view.set_paths (input_uri, output_path);
             stack.visible_child_name = "progress";
         });
 

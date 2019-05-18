@@ -20,9 +20,11 @@
 */
 
 public class SetupView : Gtk.Grid {
-    public signal void desqueeze_file (string uri);
+    public signal void desqueeze_file (string input_uri, string output_path);
 
     private string file_uri;
+    private string output_path;
+
     private Gtk.Label info_label;
     private GstreamerDesqueezer desqueezer;
     private string LABEL_TEMPLATE = _("De-squeezing will create a new file named <b>%s</b> alongside the input file.");
@@ -57,7 +59,7 @@ public class SetupView : Gtk.Grid {
         attach (button, 1, 1, 2);
 
         button.clicked.connect (() => {
-            desqueeze_file (file_uri);
+            desqueeze_file (file_uri, output_path);
         });
     }
 
@@ -69,7 +71,11 @@ public class SetupView : Gtk.Grid {
         var basename = file.get_basename ();
         basename = basename.substring (0, basename.last_index_of ("."));
         basename = Markup.escape_text (basename);
-        info_label.label = LABEL_TEMPLATE.printf (basename + ".desqueezed.webm");
+        var output_filename = basename + ".desqueezed.webm";
+
+        info_label.label = LABEL_TEMPLATE.printf (output_filename);
+
+        output_path = Path.build_filename (file.get_parent ().get_path (), output_filename);
     }
 }
 
