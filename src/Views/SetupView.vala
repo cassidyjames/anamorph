@@ -21,7 +21,10 @@
 
 public class SetupView : Gtk.Grid {
     public Gtk.Stack stack { get; construct; }
+
+    private Gtk.Label info_label;
     private GstreamerDesqueezer desqueezer;
+    private string LABEL_TEMPLATE = _("De-squeezing will create a new file named <b>%s</b> alongside the input file.");
 
     public SetupView (Gtk.Stack _stack) {
         Object (
@@ -34,11 +37,10 @@ public class SetupView : Gtk.Grid {
     }
 
     construct {
-        // TODO: Use real filename
-        var label = new Gtk.Label ("De-squeezing will create a new file named <b>video.desqueezed.mp4</b> alongside the input file.");
-        label.max_width_chars = 50;
-        label.use_markup = true;
-        label.wrap = true;
+        info_label = new Gtk.Label (null);
+        info_label.max_width_chars = 50;
+        info_label.use_markup = true;
+        info_label.wrap = true;
 
         desqueezer = new GstreamerDesqueezer ();
 
@@ -49,10 +51,10 @@ public class SetupView : Gtk.Grid {
         button.get_style_context ().add_class (Gtk.STYLE_CLASS_SUGGESTED_ACTION);
 
         attach (desqueezer.input_preview_area, 0, 0);
-        attach (arrow,          1, 0);
-        attach (desqueezer.output_preview_area,          2, 0);
-        attach (label,          0, 1, 3);
-        attach (button,         1, 1, 2);
+        attach (arrow, 1, 0);
+        attach (desqueezer.output_preview_area, 2, 0);
+        attach (info_label, 0, 1, 3);
+        attach (button, 1, 1, 2);
 
         button.clicked.connect (() => {
             desqueezer.play ();
@@ -60,8 +62,13 @@ public class SetupView : Gtk.Grid {
         });
     }
 
-    public void open_file (string path) {
-        desqueezer.set_file (path);
+    public void open_file (string uri) {
+        desqueezer.set_file (uri);
+        var file = File.new_for_uri (uri);
+        var basename = file.get_basename ();
+        basename = basename.substring (0, basename.last_index_of ("."));
+        basename = Markup.escape_text (basename);
+        info_label.label = LABEL_TEMPLATE.printf (basename + ".desqueezed.mp4");
     }
 }
 
