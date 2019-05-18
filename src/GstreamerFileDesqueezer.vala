@@ -21,6 +21,7 @@
 
 public class GstreamerFileDesqueezer : Object {
     public signal void complete ();
+    public signal void progress (double progress);
 
     public string input_uri { get; construct; }
     public string output_path { get; construct; }
@@ -39,6 +40,7 @@ public class GstreamerFileDesqueezer : Object {
     private Gst.Pipeline pipeline;
     private Gst.Element video_queue;
     private Gst.Element audio_queue;
+    private Gst.Element progress_report;
 
     construct {
         metadata_reader = new GstreamerMetadataReader (input_uri);
@@ -51,6 +53,9 @@ public class GstreamerFileDesqueezer : Object {
         pipeline.get_bus ().add_watch (Priority.DEFAULT, on_bus_message);
 
         var decodebin = Gst.ElementFactory.make ("uridecodebin", "input");
+        progress_report = Gst.ElementFactory.make ("progressreport", "progress_report");
+        progress_report["silent"] = true;
+        progress_report["update-freq"] = 1;
 
         video_queue = Gst.ElementFactory.make ("queue", "video_queue");
         audio_queue = Gst.ElementFactory.make ("queue", "audio_queue");
@@ -86,7 +91,7 @@ public class GstreamerFileDesqueezer : Object {
         file_sink["location"] = output_path;
 
         pipeline.add_many (
-            decodebin, // Decode the input file/stream
+            decodebin, progress_report, // Decode the input file/stream
             video_queue, video_scaler, video_caps_filter, video_convert, video_encode, // Video pipeline
             audio_queue, audio_convert, audio_encode, // Audio pipline
             webm_mux, file_sink // File output
@@ -94,7 +99,7 @@ public class GstreamerFileDesqueezer : Object {
 
         decodebin.pad_added.connect (on_pad_added);
 
-        video_queue.link_many (video_scaler, video_caps_filter, video_convert, video_encode, webm_mux);
+        video_queue.link_many (progress_report, video_scaler, video_caps_filter, video_convert, video_encode, webm_mux);
         audio_queue.link_many (audio_convert, audio_encode, webm_mux);
         webm_mux.link (file_sink);
 
@@ -133,6 +138,17 @@ public class GstreamerFileDesqueezer : Object {
                 break;
             case Gst.MessageType.EOS:
                 complete ();
+                break;
+            case Gst.MessageType.ELEMENT:
+                if (message.src == progress_report) {
+                    unowned Gst.Structure? structure = message.get_structure ();
+                    if (structure != null) {
+                        double percent;
+                        if (structure.get_double ("percent-double", out percent)) {
+                            progress (percent);
+                        }
+                    }
+                }
                 break;
             default:
                 break;

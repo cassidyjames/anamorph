@@ -23,6 +23,7 @@ public class ProgressView : Gtk.Grid {
     public signal void complete ();
 
     private GstreamerFileDesqueezer desqueezer;
+    private Gtk.ProgressBar progress_bar;
 
     public ProgressView () {
         Object (
@@ -47,13 +48,19 @@ public class ProgressView : Gtk.Grid {
         label.wrap = true;
         label.get_style_context ().add_class (Granite.STYLE_CLASS_H2_LABEL);
 
+        progress_bar = new Gtk.ProgressBar ();
+
         attach (spinner, 0, 0);
         attach (label,   1, 0);
+        attach (progress_bar, 0, 1, 2);
     }
 
     public void set_paths (string input, string output) {
         desqueezer = new GstreamerFileDesqueezer (input, output);
         desqueezer.complete.connect (() => complete ());
+        desqueezer.progress.connect ((percent) => {
+            progress_bar.fraction = percent / 100.0f;
+        });
     }
 }
 
