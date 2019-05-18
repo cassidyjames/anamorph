@@ -26,12 +26,14 @@ public class GstreamerFileDesqueezer : Object {
     public string input_uri { get; construct; }
     public string output_path { get; construct; }
     public float stretch_factor { get; set construct; }
+    public uint speed_value { get; construct; }
 
-    public GstreamerFileDesqueezer (string uri, string output_path, float stretch_factor = 1.33f) {
+    public GstreamerFileDesqueezer (string uri, string output_path, float stretch_factor = 1.33f, uint speed = 5) {
         Object (
             input_uri: uri,
             output_path: output_path,
-            stretch_factor: stretch_factor
+            stretch_factor: stretch_factor,
+            speed_value: speed
         );
     }
 
@@ -83,12 +85,17 @@ public class GstreamerFileDesqueezer : Object {
         var audio_convert = Gst.ElementFactory.make ("audioconvert", "audio_convert");
 
         var video_encode = Gst.ElementFactory.make ("vp8enc", "video_encode");
-        video_encode["deadline"] = 1;
+        // VPX_DL_GOOD_QUALITY (https://github.com/webmproject/libvpx/blob/a5d499e16570d00d5e1348b1c7977ced7af3670f/vpx/vpx_encoder.h#L848)
+        video_encode["deadline"] = 1000000;
+        // Vary this parameter to adjust trade off between encode time and quality
+        // 5 is fastest (lowest quality), while 0 is longest (best quality)
+        video_encode["cpu-used"] = speed_value;
         var audio_encode = Gst.ElementFactory.make ("vorbisenc", "audio_encode");
 
         var webm_mux = Gst.ElementFactory.make ("webmmux", "webm_mux");
         var file_sink = Gst.ElementFactory.make ("filesink", "file_sink");
         file_sink["location"] = output_path;
+        file_sink["sync"] = false;
 
         pipeline.add_many (
             decodebin, progress_report, // Decode the input file/stream
