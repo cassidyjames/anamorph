@@ -20,19 +20,19 @@
 */
 
 public class SetupView : Gtk.Grid {
-    public Gtk.Stack stack { get; construct; }
+    public signal void desqueeze_file (string uri);
 
+    private string file_uri;
     private Gtk.Label info_label;
     private GstreamerDesqueezer desqueezer;
     private string LABEL_TEMPLATE = _("De-squeezing will create a new file named <b>%s</b> alongside the input file.");
 
-    public SetupView (Gtk.Stack _stack) {
+    public SetupView () {
         Object (
             column_spacing: 6,
             halign: Gtk.Align.CENTER,
             margin: 12,
-            row_spacing: 12,
-            stack: _stack
+            row_spacing: 12
         );
     }
 
@@ -57,18 +57,19 @@ public class SetupView : Gtk.Grid {
         attach (button, 1, 1, 2);
 
         button.clicked.connect (() => {
-            desqueezer.play ();
-            //stack.visible_child_name = "success";
+            desqueeze_file (file_uri);
         });
     }
 
-    public void open_file (string uri) {
+    public void set_uri (string uri) {
+        file_uri = uri;
+
         desqueezer.set_file (uri);
         var file = File.new_for_uri (uri);
         var basename = file.get_basename ();
         basename = basename.substring (0, basename.last_index_of ("."));
         basename = Markup.escape_text (basename);
-        info_label.label = LABEL_TEMPLATE.printf (basename + ".desqueezed.mp4");
+        info_label.label = LABEL_TEMPLATE.printf (basename + ".desqueezed.webm");
     }
 }
 

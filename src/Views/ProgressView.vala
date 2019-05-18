@@ -20,9 +20,11 @@
 */
 
 public class ProgressView : Gtk.Grid {
-    public Gtk.Stack stack { get; construct; }
+    public signal void complete ();
 
-    public ProgressView (Gtk.Stack _stack) {
+    private GstreamerFileDesqueezer desqueezer;
+
+    public ProgressView () {
         Object (
             column_spacing: 6,
             halign: Gtk.Align.CENTER,
@@ -30,7 +32,6 @@ public class ProgressView : Gtk.Grid {
             margin_end: 12,
             margin_start: 12,
             row_spacing: 12,
-            stack: _stack,
             valign: Gtk.Align.CENTER
         );
     }
@@ -48,6 +49,11 @@ public class ProgressView : Gtk.Grid {
 
         attach (spinner, 0, 0);
         attach (label,   1, 0);
+    }
+
+    public void set_uri (string uri) {
+        desqueezer = new GstreamerFileDesqueezer (uri);
+        desqueezer.complete.connect (() => complete ());
     }
 }
 

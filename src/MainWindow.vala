@@ -50,10 +50,10 @@ public class MainWindow : Gtk.Window {
         var welcome_view = new WelcomeView ();
         stack.add_titled (welcome_view, "welcome", "Welcome");
 
-        var setup_view = new SetupView (stack);
+        var setup_view = new SetupView ();
         stack.add_titled (setup_view, "setup", "Setup");
 
-        var progress_view = new ProgressView (stack);
+        var progress_view = new ProgressView ();
         stack.add_titled (progress_view, "progress", "Progress");
 
         var success_view = new SuccessView (stack);
@@ -62,9 +62,18 @@ public class MainWindow : Gtk.Window {
         var error_view = new ErrorView (stack);
         stack.add_titled (error_view, "error", "Error");
 
-        welcome_view.open_file.connect ((file) => {
-            setup_view.open_file (file);
+        welcome_view.open_file.connect ((uri) => {
+            setup_view.set_uri (uri);
             stack.visible_child_name = "setup";
+        });
+
+        setup_view.desqueeze_file.connect ((uri) => {
+            progress_view.set_uri (uri);
+            stack.visible_child_name = "progress";
+        });
+
+        progress_view.complete.connect (() => {
+           stack.visible_child_name = "success";
         });
 
         var grid = new Gtk.Grid ();
