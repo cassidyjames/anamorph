@@ -42,57 +42,7 @@ public class SetupView : Gtk.Grid {
 
         desqueezer = new GstreamerDesqueezer ();
 
-        var squeezed_image = new Gtk.Image.from_resource (Anamorph.PATH + "preview-squeezed.jpg");
-        squeezed_image.get_style_context ().add_class ("thumb");
-
         var arrow = new Gtk.Image.from_icon_name ("go-next-symbolic", Gtk.IconSize.BUTTON);
-
-        var image = new Gtk.Image.from_resource (Anamorph.PATH + "preview.jpg");
-        image.valign = Gtk.Align.CENTER;
-        image.get_style_context ().add_class ("thumb");
-
-        var letterbox_switch = new Gtk.Switch ();
-        letterbox_switch.get_style_context ().add_class (Granite.STYLE_CLASS_MODE_SWITCH);
-        letterbox_switch.bind_property (
-            "active",
-            image,
-            "valign",
-            BindingFlags.SYNC_CREATE,
-            letterbox_transform_func
-        );
-
-        var fullscreen_label = new Gtk.Label ("""<span size="x-small" weight="bold">%s</span>""".printf ("FULLSCREEN"));
-        fullscreen_label.tooltip_text = "Video will be desqueezed and resized to its natural height";
-        fullscreen_label.use_markup = true;
-
-        var fullscreen_box = new Gtk.EventBox ();
-        fullscreen_box.add_events (Gdk.EventMask.BUTTON_RELEASE_MASK);
-        fullscreen_box.add (fullscreen_label);
-        fullscreen_box.button_release_event.connect (() => {
-            letterbox_switch.active = false;
-            return Gdk.EVENT_STOP;
-        });
-
-        var letterbox_label = new Gtk.Label ("""<span size="x-small" weight="bold">%s</span>""".printf ("LETTERBOX"));
-        letterbox_label.tooltip_text = "Video will be desqueezed and black bars added to keep its original height";
-        letterbox_label.use_markup = true;
-
-        var letterbox_box = new Gtk.EventBox ();
-        letterbox_box.add_events (Gdk.EventMask.BUTTON_RELEASE_MASK);
-        letterbox_box.add (letterbox_label);
-        letterbox_box.button_release_event.connect (() => {
-            letterbox_switch.active = true;
-            return Gdk.EVENT_STOP;
-        });
-
-        var letterbox_grid = new Gtk.Grid ();
-        letterbox_grid.column_spacing = 6;
-        letterbox_grid.halign = Gtk.Align.START;
-        letterbox_grid.valign = Gtk.Align.END;
-
-        letterbox_grid.add (fullscreen_box);
-        letterbox_grid.add (letterbox_switch);
-        letterbox_grid.add (letterbox_box);
 
         var button = new Gtk.Button.with_label ("De-squeeze");
         button.halign = Gtk.Align.END;
@@ -102,23 +52,12 @@ public class SetupView : Gtk.Grid {
         attach (arrow,          1, 0);
         attach (desqueezer.output_preview_area,          2, 0);
         attach (label,          0, 1, 3);
-        attach (letterbox_grid, 0, 2);
-        attach (button,         1, 2, 2);
+        attach (button,         1, 1, 2);
 
         button.clicked.connect (() => {
             desqueezer.play ();
             //stack.visible_child_name = "success";
         });
-    }
-
-    private bool letterbox_transform_func (Binding binding, Value source_value, ref Value target_value) {
-        if (source_value == true) {
-            target_value = Gtk.Align.FILL;
-        } else {
-            target_value = Gtk.Align.CENTER;
-        }
-
-        return true;
     }
 
     public void open_file (string path) {
