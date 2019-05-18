@@ -69,7 +69,6 @@ public class GstreamerDesqueezer : Object {
     public void set_file (string uri) {
         input_path = uri;
 
-        warning ("set_file: %s", input_path);
         metadata_reader = new GstreamerMetadataReader (input_path);
         metadata_reader.ready.connect (construct_pipelines);
         metadata_reader.read ();
@@ -152,7 +151,6 @@ public class GstreamerDesqueezer : Object {
         var new_pad_caps = pad.query_caps (null);
         weak Gst.Structure new_pad_struct = new_pad_caps.get_structure (0);
         var new_pad_type = new_pad_struct.get_name ();
-        warning (new_pad_type);
         if (new_pad_type.has_prefix ("video/x-raw")) {
             pad.link (sink_pad);
         }
