@@ -13,6 +13,7 @@ asresources = gnome.compile_resources (
 
 anamorph_files = files (
     'src/Application.vala',
+    'src/Fraction.vala',
     'src/GstreamerDesqueezer.vala',
     'src/GstreamerFileDesqueezer.vala',
     'src/GstreamerMetadataReader.vala',

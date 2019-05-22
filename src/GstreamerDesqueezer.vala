@@ -21,7 +21,7 @@
 
 public class GstreamerDesqueezer : Object {
     public string input_path { get; set construct; }
-    public float stretch_factor { get; set construct; }
+    public Fraction stretch_factor { get; set construct; }
 
     private Gtk.Widget? _input_preview_area;
     public Gtk.Widget? input_preview_area {
@@ -43,7 +43,7 @@ public class GstreamerDesqueezer : Object {
         }
     }
 
-    public GstreamerDesqueezer (float stretch_factor = 1.33f) {
+    public GstreamerDesqueezer (Fraction stretch_factor = {4, 3}) {
         Object (stretch_factor: stretch_factor);
     }
 
@@ -111,9 +111,9 @@ public class GstreamerDesqueezer : Object {
         );
 
         var output_caps = new Gst.Caps.simple ("video/x-raw",
-            "width", typeof(int), (int)(metadata_reader.video_width * stretch_factor),
+            "width", typeof(int), (int)(metadata_reader.video_width),
             "height", typeof(int), metadata_reader.video_height,
-            "pixel-aspect-ratio", typeof (Gst.Fraction), 1, 1
+            "pixel-aspect-ratio", typeof (Gst.Fraction), stretch_factor.numerator, stretch_factor.denominator
         );
 
         input_caps_filter["caps"] = input_caps;

@@ -25,10 +25,10 @@ public class GstreamerFileDesqueezer : Object {
 
     public string input_uri { get; construct; }
     public string output_path { get; construct; }
-    public float stretch_factor { get; set construct; }
+    public Fraction stretch_factor { get; set construct; }
     public uint speed_value { get; construct; }
 
-    public GstreamerFileDesqueezer (string uri, string output_path, float stretch_factor = 1.33f, uint speed = 5) {
+    public GstreamerFileDesqueezer (string uri, string output_path, Fraction stretch_factor = {4, 3}, uint speed = 5) {
         Object (
             input_uri: uri,
             output_path: output_path,
@@ -74,9 +74,9 @@ public class GstreamerFileDesqueezer : Object {
 
         var video_caps_filter = Gst.ElementFactory.make ("capsfilter", "video_caps_filter");
         var video_caps = new Gst.Caps.simple ("video/x-raw",
-            "width", typeof(int), (int)(metadata_reader.video_width * stretch_factor),
+            "width", typeof(int), (int)(metadata_reader.video_width),
             "height", typeof(int), metadata_reader.video_height,
-            "pixel-aspect-ratio", typeof (Gst.Fraction), 1, 1
+            "pixel-aspect-ratio", typeof (Gst.Fraction), stretch_factor.numerator, stretch_factor.denominator
         );
 
         video_caps_filter["caps"] = video_caps;
