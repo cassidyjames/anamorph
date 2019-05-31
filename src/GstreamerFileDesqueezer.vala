@@ -46,8 +46,9 @@ public class GstreamerFileDesqueezer : Object {
     private Gst.Element progress_report;
     protected Gee.ArrayList<AudioStreamCaps?> audio_caps = new Gee.ArrayList<AudioStreamCaps?> ();
     private Gee.HashSet<string> used_stream_ids = new Gee.HashSet<string> ();
-    private Gee.ArrayList<Gst.Pad> audio_pads = new Gee.ArrayList<Gst.Pad> ();
+    private Gst.Pad[] audio_pads;
     protected string video_stream_id;
+    private Gst.PbUtils.EncodingContainerProfile encodebin_profile;
 
     construct {
         // Media discoverer with a 5 second timeout
@@ -69,6 +70,7 @@ public class GstreamerFileDesqueezer : Object {
         if (info.get_stream_info () is Gst.PbUtils.DiscovererContainerInfo) {
             var container = info.get_stream_info () as Gst.PbUtils.DiscovererContainerInfo;
             container_caps = container.get_caps ();
+            warning (container_caps.to_string ());
             container.get_streams ().foreach ((stream) => {
                 if (stream is Gst.PbUtils.DiscovererVideoInfo && video_caps == null) {
                     var video_stream = stream as Gst.PbUtils.DiscovererVideoInfo;
@@ -88,38 +90,39 @@ public class GstreamerFileDesqueezer : Object {
         pipeline.get_bus ().add_watch (Priority.DEFAULT, on_bus_message);
 
         // Set up an encoding profile that perfectly matches the source to avoid re-encoding
-        var encodebin_profile = new Gst.PbUtils.EncodingContainerProfile ("containerformat", null, container_caps, null);
-        var video_profile = new Gst.PbUtils.EncodingVideoProfile (video_caps, null, new Gst.Caps.any (), 0);
+        encodebin_profile = new Gst.PbUtils.EncodingContainerProfile ("containerformat", null, container_caps, null);
+        var video_profile = new Gst.PbUtils.EncodingVideoProfile (video_caps, null, null, 0);
         encodebin_profile.add_profile (video_profile);
-        int x = 0;
-        foreach (var audio_cap in audio_caps) {
-            var audio_profile = new Gst.PbUtils.EncodingAudioProfile (audio_cap.caps, null, new Gst.Caps.any (), 0);
+
+        audio_pads = new Gst.Pad[audio_caps.size];
+        for (int x = 0; x < audio_caps.size; x++) {
+            var audio_profile = new Gst.PbUtils.EncodingAudioProfile (audio_caps[x].caps, null, null, 0);
             audio_profile.set_name ("audioprofilename" + x.to_string ());
             encodebin_profile.add_profile (audio_profile);
-            x++;
+        }
+
+        encodebin = Gst.ElementFactory.make ("encodebin", "output");
+        encodebin["profile"] = encodebin_profile;
+        encodebin["avoid-reencoding"] = true;
+        pipeline.add (encodebin);
+        encodebin.set_state (Gst.State.PAUSED);
+
+        for (int i = 0; i < audio_caps.size; i++) {
+            Gst.Pad audio_pad;
+            Signal.emit_by_name (encodebin, "request-profile-pad", "audioprofilename" + i.to_string (), out audio_pad);
+            audio_pads[i] = audio_pad;
         }
 
         var decodebin = Gst.ElementFactory.make ("uridecodebin", "input");
         decodebin.connect ("signal::autoplug-continue", on_autoplug_continue, this, null);
         decodebin.pad_added.connect (on_pad_added);
         decodebin["uri"] = input_uri;
+        pipeline.add (decodebin);
         decodebin.set_state (Gst.State.PAUSED);
 
         progress_report = Gst.ElementFactory.make ("progressreport", "progress_report");
         progress_report["silent"] = true;
         progress_report["update-freq"] = 1;
-
-        encodebin = Gst.ElementFactory.make ("encodebin", "output");
-        encodebin.set_state (Gst.State.PAUSED);
-        encodebin["profile"] = encodebin_profile;
-        encodebin["avoid-reencoding"] = true;
-
-        for (int i = 0; i < audio_caps.size; i++) {
-            Gst.Pad audio_pad;
-            Signal.emit_by_name (encodebin, "request-profile-pad", "audioprofilename" + i.to_string (), out audio_pad);
-            audio_caps[i].corresponding_pad = audio_pad;
-            warning (audio_caps[i].corresponding_pad.name);
-        }
 
         // video_queue = Gst.ElementFactory.make ("queue", "video_queue");
         // audio_queue = Gst.ElementFactory.make ("queue", "audio_queue");
@@ -157,9 +160,9 @@ public class GstreamerFileDesqueezer : Object {
         // var webm_mux = Gst.ElementFactory.make ("webmmux", "webm_mux");
         var file_sink = Gst.ElementFactory.make ("filesink", "file_sink");
         file_sink["location"] = output_path;
+        file_sink["async"] = false;
         file_sink.set_state (Gst.State.PAUSED);
-
-        pipeline.add_many (decodebin, encodebin, file_sink);
+        pipeline.add (file_sink);
         encodebin.link (file_sink);
 
         // pipeline.add_many (
@@ -175,17 +178,14 @@ public class GstreamerFileDesqueezer : Object {
         // audio_queue.link_many (audio_convert, audio_encode, webm_mux);
         // webm_mux.link (file_sink);
 
-        pipeline.set_state (Gst.State.PAUSED);
-
-        decodebin.no_more_pads.connect (() => {
-            warning ("no more pads");
-            Timeout.add_seconds (1, () => {
-                warning ("trying to play");
-                pipeline.set_state (Gst.State.PLAYING);
-                //warning (Gst.Debug.bin_to_dot_data (pipeline, Gst.DebugGraphDetails.ALL));
-                return false;
-            });
-        });
+        // decodebin.no_more_pads.connect (() => {
+        //     Idle.add (() => {
+        //         warning ("trying to play");
+        //         pipeline.set_state (Gst.State.PLAYING);
+        //         Gst.Debug.bin_to_dot_file (pipeline, Gst.DebugGraphDetails.ALL, "debug");
+        //         return false;
+        //     });
+        // });
     }
 
     private static bool on_autoplug_continue (Gst.Element uridecodebin, Gst.Pad pad, Gst.Caps caps, GstreamerFileDesqueezer instance) {
@@ -193,7 +193,6 @@ public class GstreamerFileDesqueezer : Object {
         if (event != null) {
             string stream_id = "";
             event.parse_stream_start (out stream_id);
-            bool retval = true;
             foreach (var audio_stream in instance.audio_caps) {
                 if (stream_id == audio_stream.stream_id) {
                     return false;
@@ -201,6 +200,15 @@ public class GstreamerFileDesqueezer : Object {
             }
 
             if (stream_id == instance.video_stream_id) {
+                return false;
+            }
+
+            var capsvalue = caps.to_string ();
+            if (capsvalue.has_prefix ("subtitle/")) {
+                return false;
+            }
+
+            if (capsvalue.has_prefix ("audio/")) {
                 return false;
             }
 
@@ -237,9 +245,13 @@ public class GstreamerFileDesqueezer : Object {
             while (x < audio_caps.size) {
                 if (probe_stream_id == audio_caps[x].stream_id) {
                     if (!(probe_stream_id in used_stream_ids)) {
-                        warning ("linking audio pad");
                         used_stream_ids.add (probe_stream_id);
-                        warning (pad.link (audio_caps[x].corresponding_pad).to_string ());
+                        warning (pad.link (audio_pads[x]).to_string ());
+                        Idle.add (() => {
+                            pipeline.set_state (Gst.State.PLAYING);
+                            Gst.Debug.bin_to_dot_file (pipeline, Gst.DebugGraphDetails.ALL, "debug");
+                            return false;
+                        });
                     }
                 }
             }
@@ -255,17 +267,6 @@ public class GstreamerFileDesqueezer : Object {
                 Error error_object;
                 message.parse_error (out error_object, out error_message);
                 warning ("%s, %s", error_message, error_object.message);
-                break;
-            case Gst.MessageType.STATE_CHANGED:
-                Gst.State old, @new;
-                message.parse_state_changed (out old, out @new, null);
-                string element_name = "";
-                var element = message.src as Gst.Element;
-                if (element != null) {
-                    element_name = element.get_name ();
-                }
-
-                warning ("%s: %s -> %s", element_name, old.to_string (), @new.to_string ());
                 break;
             case Gst.MessageType.EOS:
                 complete ();
