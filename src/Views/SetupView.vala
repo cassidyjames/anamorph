@@ -71,7 +71,7 @@ public class SetupView : Gtk.Grid {
         var basename = file.get_basename ();
         basename = basename.substring (0, basename.last_index_of ("."));
         basename = Markup.escape_text (basename);
-        var output_filename = basename + ".desqueezed.webm";
+        var output_filename = basename + ".desqueezed.mp4";
 
         info_label.label = LABEL_TEMPLATE.printf (output_filename);
 
