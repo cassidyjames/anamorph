@@ -160,8 +160,6 @@ public class GstreamerFileDesqueezer : Object {
         // var webm_mux = Gst.ElementFactory.make ("webmmux", "webm_mux");
         var file_sink = Gst.ElementFactory.make ("filesink", "file_sink");
         file_sink["location"] = output_path;
-        file_sink["async"] = false;
-        file_sink.set_state (Gst.State.PAUSED);
         pipeline.add (file_sink);
         encodebin.link (file_sink);
 
@@ -178,14 +176,14 @@ public class GstreamerFileDesqueezer : Object {
         // audio_queue.link_many (audio_convert, audio_encode, webm_mux);
         // webm_mux.link (file_sink);
 
-        // decodebin.no_more_pads.connect (() => {
-        //     Idle.add (() => {
-        //         warning ("trying to play");
-        //         pipeline.set_state (Gst.State.PLAYING);
-        //         Gst.Debug.bin_to_dot_file (pipeline, Gst.DebugGraphDetails.ALL, "debug");
-        //         return false;
-        //     });
-        // });
+        decodebin.no_more_pads.connect (() => {
+            Idle.add (() => {
+                warning ("trying to play");
+                pipeline.set_state (Gst.State.PLAYING);
+                Gst.Debug.bin_to_dot_file (pipeline, Gst.DebugGraphDetails.ALL, "debug");
+                return false;
+            });
+        });
     }
 
     private static bool on_autoplug_continue (Gst.Element uridecodebin, Gst.Pad pad, Gst.Caps caps, GstreamerFileDesqueezer instance) {
@@ -247,13 +245,10 @@ public class GstreamerFileDesqueezer : Object {
                     if (!(probe_stream_id in used_stream_ids)) {
                         used_stream_ids.add (probe_stream_id);
                         warning (pad.link (audio_pads[x]).to_string ());
-                        Idle.add (() => {
-                            pipeline.set_state (Gst.State.PLAYING);
-                            Gst.Debug.bin_to_dot_file (pipeline, Gst.DebugGraphDetails.ALL, "debug");
-                            return false;
-                        });
                     }
                 }
+
+                x++;
             }
         }
 
