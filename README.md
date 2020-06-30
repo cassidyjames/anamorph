@@ -24,7 +24,7 @@ Looking for an awesome anamorphic lens to use with Anamorph? Grab one from [Mome
 
 ## Made for [elementary OS]
 
-Anamorph is designed and developed on and for [elementary OS]. <!--Purchasing through AppCenter directly supports the development and ensures instant updates straight from me. [Get it on AppCenter][AppCenter] for the best experience.
+Anamorph is designed and developed on and for [elementary OS]. <!-- Purchasing through AppCenter directly supports the development and ensures instant updates straight from me. [Get it on AppCenter][AppCenter] for the best experience.
 
 [![Get it on AppCenter](https://appcenter.elementary.io/badge.svg)][AppCenter]
 
